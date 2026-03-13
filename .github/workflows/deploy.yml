@@ -19,10 +19,12 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - name: Configure Databricks CLI
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
         run: |
-          pip install -r backend/requirements.txt
-          pip install databricks-cli
+          databricks clusters list
 
       - name: Configure Databricks CLI
         run: |
