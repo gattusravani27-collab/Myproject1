@@ -19,20 +19,4 @@ jobs:
           python-version: "3.11"
 
       - name: Install Databricks CLI
-        run: |
-          pip install databricks-cli
-
-      - name: Configure Databricks Authentication
-        run: |
-          databricks configure --token <<EOF
-          ${{ secrets.DATABRICKS_HOST }}
-          ${{ secrets.DATABRICKS_TOKEN }}
-          EOF
-
-      - name: Upload Backend Code
-        run: |
-          databricks workspace import-dir backend /Workspace/RAG/backend --overwrite
-
-      - name: Upload Ingestion Code
-        run: |
-          databricks workspace import-dir ingestion /Workspace/RAG/ingestion --overwrite
+        run: pip install databricks-cli
