@@ -1,9 +1,3 @@
-# Databricks notebook source
-# MAGIC %pip install langchain langchain-community langchain-core faiss-cpu redis python-dotenv requests
-
-# COMMAND ----------
-
-# DBTITLE 1,Cell 2
 import os
 import requests
 from typing import List
@@ -17,24 +11,26 @@ from langchain_core.embeddings import Embeddings
 from langchain_community.vectorstores import FAISS
 from langchain_community.chat_message_histories import RedisChatMessageHistory
 
-# COMMAND ----------
-
-# DBTITLE 1,Untitled
-FOUNDRY_URL = dbutils.secrets.get(scope="ragscope", key="foundryurl")
-FOUNDRY_API_KEY = dbutils.secrets.get(scope="ragscope", key="foundryapikey")
-
-DATABRICKS_HOST = dbutils.secrets.get(scope="ragscope", key="DATABRICKSHOST")
-DATABRICKS_TOKEN = dbutils.secrets.get(scope="ragscope", key="DATABRICKSTOKEN")
-
-EMBEDDING_ENDPOINT = dbutils.secrets.get(scope="ragscope", key="EMBEDDINGENDPT")
 
 
-REDIS_HOST = dbutils.secrets.get(scope="ragscope", key="REDISHOST")
-REDIS_PASSWORD = dbutils.secrets.get(scope="ragscope", key="REDISPASSWORD")
-REDIS_URL = dbutils.secrets.get(scope="ragscope", key="REDISSURL")
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+FOUNDRY_URL = os.getenv("FOUNDRY_URL")
+FOUNDRY_API_KEY = os.getenv("FOUNDRY_API_KEY")
+
+DATABRICKS_HOST = os.getenv("DATABRICKS_HOST")
+DATABRICKS_TOKEN = os.getenv("DATABRICKS_TOKEN")
+
+EMBEDDING_ENDPOINT = os.getenv("EMBEDDING_ENDPOINT")
+
+REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
+REDIS_URL = os.getenv("REDIS_URL")
 
 
-# COMMAND ----------
 
 
 from typing import List, Union
@@ -137,7 +133,7 @@ class DatabricksEndpointEmbeddings(Embeddings):
         return self._call_endpoint([text])[0]
 
 
-# COMMAND ----------
+
 
 embedding_model = DatabricksEndpointEmbeddings(
     host=DATABRICKS_HOST,
@@ -145,7 +141,7 @@ embedding_model = DatabricksEndpointEmbeddings(
     endpoint=EMBEDDING_ENDPOINT
 )
 
-# COMMAND ----------
+
 
 FAISS_PATH = "/Volumes/sravani/sujan/faiss_store"
 
@@ -158,7 +154,7 @@ vectorstore = FAISS.load_local(
 retriever = vectorstore.as_retriever(search_kwargs={"k": 6})
 print("FAISS loaded successfully")
 
-# COMMAND ----------
+
 
 from langchain_core.language_models import LLM
 from langchain_core.messages import BaseMessage
@@ -225,7 +221,7 @@ class FoundryChatLLM(LLM):
         return result["choices"][0]["message"]["content"]
 
 
-# COMMAND ----------
+
 
 llm = FoundryChatLLM(
     url=FOUNDRY_URL,
@@ -235,7 +231,7 @@ llm = FoundryChatLLM(
 # Quick sanity test
 print(llm.invoke("Reply in one short sentence."))
 
-# COMMAND ----------
+
 
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -251,12 +247,12 @@ If the answer is not in context, say "I don't know"."""),
 ])
 
 
-# COMMAND ----------
+
 
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
-# COMMAND ----------
+
 
 
 from langchain_core.runnables import RunnablePassthrough
@@ -270,7 +266,7 @@ rag_chain = (
     | llm
 )
 
-# COMMAND ----------
+
 
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_community.chat_message_histories import RedisChatMessageHistory
@@ -289,10 +285,7 @@ rag_with_memory = RunnableWithMessageHistory(
 )
 
 
-# COMMAND ----------
 
-# DBTITLE 1,Cell 13
-#from pyspark.sql import functions as sf
 response = rag_with_memory.invoke(
     {"question": "Tell about Indias G20 presidency"},
     config={"configurable": {"session_id": "user1"}}
@@ -300,7 +293,7 @@ response = rag_with_memory.invoke(
 
 print(response)
 
-# COMMAND ----------
+
 
 response = rag_with_memory.invoke(
     {"question": "what was my last question? "},
@@ -309,7 +302,6 @@ response = rag_with_memory.invoke(
 
 print(response)
 
-# COMMAND ----------
 
 response = rag_with_memory.invoke(
     {"question": "what was my previous question? "},
