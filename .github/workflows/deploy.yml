@@ -1,0 +1,38 @@
+name: Deploy RAG System
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Databricks CLI
+        run: |
+          pip install databricks-cli
+
+      - name: Configure Databricks Authentication
+        run: |
+          databricks configure --token <<EOF
+          ${{ secrets.DATABRICKS_HOST }}
+          ${{ secrets.DATABRICKS_TOKEN }}
+          EOF
+
+      - name: Upload Backend Code
+        run: |
+          databricks workspace import-dir backend /Workspace/RAG/backend --overwrite
+
+      - name: Upload Ingestion Code
+        run: |
+          databricks workspace import-dir ingestion /Workspace/RAG/ingestion --overwrite
