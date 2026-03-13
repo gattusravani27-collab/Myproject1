@@ -19,16 +19,22 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      - name: Install Databricks CLI
+        run: |
+          pip install databricks-cli
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
       - name: Configure Databricks CLI
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
         run: |
           databricks clusters list
-
-      - name: Configure Databricks CLI
-        run: |
-          databricks configure --host ${{ secrets.DATABRICKS_HOST }} --token ${{ secrets.DATABRICKS_TOKEN }}
 
       - name: Deploy RAG Chatbot Endpoint
         run: |
