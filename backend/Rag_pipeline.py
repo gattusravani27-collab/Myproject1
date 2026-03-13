@@ -13,22 +13,20 @@ from langchain_community.chat_message_histories import RedisChatMessageHistory
 
 
 
-from dotenv import load_dotenv
-import os
 
-load_dotenv()
+FOUNDRY_URL = dbutils.secrets.get(scope="ragscope", key="foundryurl")
+FOUNDRY_API_KEY = dbutils.secrets.get(scope="ragscope", key="foundryapikey")
 
-FOUNDRY_URL = os.getenv("FOUNDRY_URL")
-FOUNDRY_API_KEY = os.getenv("FOUNDRY_API_KEY")
+DATABRICKS_HOST = dbutils.secrets.get(scope="ragscope", key="DATABRICKSHOST")
+DATABRICKS_TOKEN = dbutils.secrets.get(scope="ragscope", key="DATABRICKSTOKEN")
 
-DATABRICKS_HOST = os.getenv("DATABRICKS_HOST")
-DATABRICKS_TOKEN = os.getenv("DATABRICKS_TOKEN")
+EMBEDDING_ENDPOINT = dbutils.secrets.get(scope="ragscope", key="EMBEDDINGENDPT")
 
-EMBEDDING_ENDPOINT = os.getenv("EMBEDDING_ENDPOINT")
 
-REDIS_HOST = os.getenv("REDIS_HOST")
-REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
-REDIS_URL = os.getenv("REDIS_URL")
+REDIS_HOST = dbutils.secrets.get(scope="ragscope", key="REDISHOST")
+REDIS_PASSWORD = dbutils.secrets.get(scope="ragscope", key="REDISPASSWORD")
+REDIS_URL = dbutils.secrets.get(scope="ragscope", key="REDISSURL")
+
 
 
 
