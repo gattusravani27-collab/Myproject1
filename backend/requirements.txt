@@ -4,3 +4,8 @@ langchain
 databricks-sdk
 openai
 pydantic
+mlflow
+langchain-community
+faiss-cpu
+redis
+tiktoken
