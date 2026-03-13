@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -18,5 +19,15 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install Databricks CLI
-        run: pip install databricks-cli
+      - name: Install dependencies
+        run: |
+          pip install -r backend/requirements.txt
+          pip install databricks-cli
+
+      - name: Configure Databricks CLI
+        run: |
+          databricks configure --host ${{ secrets.DATABRICKS_HOST }} --token ${{ secrets.DATABRICKS_TOKEN }}
+
+      - name: Deploy RAG Chatbot Endpoint
+        run: |
+          python backend/Rag_chatbot.py
