@@ -252,3 +252,16 @@ assert faiss_vectors == docstore_docs, \
     "FAISS and docstore mismatch — RAG will break"
 
 print("FAISS index healthy")
+
+# COMMAND ----------
+
+if len(new_chunks) > 0:
+    print("New documents detected. Updating FAISS and redeploying endpoint.")
+
+    dbutils.notebook.run(
+        "/Workspace/Myproject1/backend/Rag_chatbot",
+        timeout_seconds=0
+    )
+
+else:
+    print("No new documents. Skipping FAISS update and endpoint deployment.")
